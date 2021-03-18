@@ -1,0 +1,25 @@
+﻿@model Product
+@{
+
+}
+
+<div class="row">
+    <div class="col-lg-4">
+        <br />
+        <h2 class="text-danger">SẢN PHẨM BÁN CHẠY</h2>
+        <hr />
+        <p>Tên sản phẩm: <strong>@Model.Name</strong></p>
+        <div class="col-lg-6">
+            <img class="img-fluid rounded" alt=""
+                 src="~/img/ProductImages/@Model.ImagePath">
+          
+        </div>    
+        <p>Giá sản phẩm: <strong>@Model.PricePerUnit.ToString("N0")</strong></p>
+        <small>Số lượng </small><input type="number" class="btn btn-style border-btn text-info" id="@Model.Id" style="width:100px" value="1" />                                <br />
+        <a href="javascript:void(0)" onclick="CustomerCart.AddItem(@Model.Id)" class="btn btn-style btn-primary">
+            Thêm Vào Giỏ Hàng
+        </a>
+
+    </div>
+    
+</div>

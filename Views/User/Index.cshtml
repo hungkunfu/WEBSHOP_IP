@@ -1,0 +1,155 @@
+﻿
+@model PaginationUser
+
+@{
+    ViewBag.Title = "User managerment";
+    var pageNumber = 1;
+    int[] pagesizeItem = new int[] { 4, 6, 12, 24, 48 };
+    Layout = "~/Views/User/_LayoutUser.cshtml";
+}
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="~/css/snipper.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-12">
+        <div class="row">
+            <div class="col-3">
+                <select id="pageSize" class="custom-select" onchange="changePageSize()">
+                    @foreach (int item in pagesizeItem)
+                    {
+                        if (item == Model.paginationUsers.PageSize)
+                        {
+                            <option value="@item" selected>@item</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item</option>
+                        }
+
+                    }
+
+                </select>
+            </div>
+            <div class="col-9">
+                <input class="form-control" value="@Model.paginationUsers.Keyword" onchange="search(this)" />
+            </div>
+        </div>
+    </div>
+</div>
+<h3> USER MANAGERMENT</h3>
+<a asp-controller="User" asp-action="Create" class="btn btn-warning" style="width:auto">Create User</a>
+<table class="table table-bordered table-hover mt-2">
+    <thead class="thead-dark">
+        <tr>
+
+            <th>UserName</th>
+            <th>Address</th>
+            <th>Role</th>
+            <th>Acction</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            @foreach (var user in Model.UserViewModels)
+            {
+                <tr>
+
+                    <td>@user.Email </td>
+                    <td>@user.Address</td>
+                    <td>@user.RoleName</td>
+                    <td>
+                        <a asp-controller="User" asp-action="Edit" asp-route-id="@user.UserId" class="btn btn-warning"><i class="fas fa-edit"></i></a>
+                        <a onclick="removeCartItem(`@user.UserId`)" class="btn btn-danger"><i class="fas fa-trash"></i></a>
+                        @*<a onclick="removeCartItem(@cartitem.Product.ProductId)" class="btn btn-danger">Remove</a>*@
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<hr />
+<div class="row mt-1 mb-0">
+    <div class="col-12">
+        <ul class="pagination">
+            <li class="@(Model.paginationUsers.CurrentPage == 1 ? "page-item disabled" : "page-item")"><a class="page-link" asp-controller="User" asp-action="index" asp-route-pageNumber="1">First</a></li>
+            <li class="@(Model.paginationUsers.CurrentPage == 1 ? "page-item disabled" : "page-item")"><a class="page-link" asp-controller="User" asp-action="index" asp-route-pageNumber="@(Model.paginationUsers.CurrentPage-1)">Previous</a></li>
+            @for (pageNumber = Model.paginationUsers.StartPage; pageNumber <= Model.paginationUsers.EndPage; pageNumber++)
+            {
+                <li class="@(pageNumber == Model.paginationUsers.CurrentPage ? "page-item active" : "page-item")"><a class="page-link" asp-controller="User" asp-action="index" asp-route-pageNumber="@pageNumber">@pageNumber</a></li>
+            }
+            <li class="@(Model.paginationUsers.CurrentPage == Model.paginationUsers.TotalPages ? "page-item disabled" : "page-item")"><a class="page-link" asp-action="index" asp-route-pageNumber="@(Model.paginationUsers.CurrentPage+1)">Next</a></li>
+            <li class="@(Model.paginationUsers.CurrentPage == Model.paginationUsers.TotalPages ? "page-item disabled" : "page-item")"><a class="page-link" asp-action="index" asp-route-pageNumber="@Model.paginationUsers.TotalPages">Last</a></li>
+        </ul>
+
+    </div>
+</div>
+<hr />
+
+@section Script {
+    <script src="~/lib/bootbox/bootbox.min.js"></script>
+    <script>
+          $(document).ready(function () {
+              $(".updatecartitem").click(function (event) {
+                  event.preventDefault();
+                  var productid = $(this).attr("data-productid");
+                  var quantity = $("#quantity-" + productid).val();
+                  $.ajax({
+                      type: "POST",
+                      url:"@Url.RouteUrl("updatecart")",
+                      data: {
+                          productid: parseInt(productid),
+                          quantity: parseInt(quantity)
+                      },
+                      success: function (result) {
+                          window.location.href = "@Url.RouteUrl("cart")";
+                      }
+                  });
+              });
+          });
+            function removeCartItem(productId) {
+                bootbox.confirm({
+                    title: "Remove User?",
+                    message: "Do you want to remove User.",
+                    buttons: {
+                        cancel: {
+                            label: '<i class="fa fa-times"></i> No'
+                        },
+                        confirm: {
+                            label: '<i class="fa fa-check"></i> Yes'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            $.ajax({
+                                type: "GET",
+                                url:`/User/Delete/${productId}`,
+                                success: function (result) {
+                                    window.location.href = "@Url.RouteUrl("cart")";
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+    </script>
+}
+
+<script>
+    function changePageSize() {
+        window.location.href = `/User/Index/?pageNumber=1&pageSize=${$('#pageSize').val()}`;
+    }
+    function search(el) {
+        if ($(el).val() == null || $(el).val() == '') {
+            window.location.href = `/User/Index/?pageNumber=1&pageSize=${$('#pageSize').val()}`;
+        }
+        else {
+            window.location.href = `/User/Index/?pageNumber=1&pageSize=${$('#pageSize').val()}&keyword=${$(el).val()}`;
+        }
+    }
+</script>
+
+
+

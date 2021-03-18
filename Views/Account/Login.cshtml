@@ -1,0 +1,50 @@
+﻿@{
+    ViewBag.Title = "Login";
+    Layout = null;
+}
+@model LoginViewModel
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="fonts/material-design-iconic-font/css/material-design-iconic-font.min.css">
+    <link href="~/TemplateLogin/css/style.css" rel="stylesheet" />
+
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <div class="inner">
+            <form enctype="multipart/form-data" method="post" asp-controller="Account" asp-action="Login">
+                <h3>Đăng Nhập</h3>
+
+                <div class="form-wrapper">
+                    <label for="">Email</label>
+                    <input class="form-control" type="text" placeholder="Email" asp-for="Email">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-wrapper">
+                    <label for="">Password</label>
+                    <input class="form-control" placeholder="Password" asp-for="Password">
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <a class="d-block py-2 small">Bạn quên mật khẩu?</a>
+                <div class="p-t-10">
+                    <button class="btn btn--pill btn--green w-100" type="submit">Submit</button>
+                </div>
+                <div class="small text-muted py-2 text-center">Bạn chưa có tài khoản? <a asp-controller="Account" asp-action="Register" style="color:dodgerblue;">Đăng ký</a></div>
+                
+
+            </form>
+        </div>
+    </div>
+    <script src="/lib/jquery/jquery.min.js"></script>
+    <script src="/lib/jquery-validation/jquery.validate.min.js"></script>
+    <script src="/lib/jquery-validation/jquery.validate.unobtrusive.min.js"></script>
+    <script src="/lib/bootstrap-v4/js/bootstrap.min.js"></script>
+</body>
+
+
+</html>

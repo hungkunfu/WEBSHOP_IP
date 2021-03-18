@@ -1,0 +1,83 @@
+﻿@using System.Globalization;
+@{
+    ViewBag.Title = "Product";
+    var pageNumber = 1;
+    int[] pagesizeItem = new int[] { 12, 24, 36, 48, 60 };
+    Layout = "_LayoutCart";
+}
+
+@model PaginationProduct
+
+
+<div class="row mb-1">
+    <div class="col-12">
+        <div class="row">
+            <div class="col-3">
+                <select id="pageSize" class="custom-select" onchange="changePageSize()">
+                    @foreach (int item in pagesizeItem)
+                    {
+                        if (item == Model.Pagination.PageSize)
+                        {
+                            <option value="@item" selected>@item</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    }
+
+                </select>
+            </div>
+            <div class="col-9">
+                <input class="form-control" type="search" value="@Model.Pagination.Keyword" oninput="search(this)" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    @foreach (var pdt in Model.products)
+    {
+        <div class="col-sm-4 col-md-3">
+            <div class="card">
+                <h6 class="card-header">@pdt.Name</h6>
+                <div class="card-body" style="height: 150px;">
+                    <p>@pdt.PricePerUnit</p>
+                </div>
+                <div class="card-footer">
+                    <span class="text-muted">@($"{pdt.PricePerUnit.ToString("n0")} vnd")</span>
+                    <a asp-controller="Product" asp-action="AddToCard" asp-route-productId="@pdt.Id" style="font-size: 14px" class="btn btn-secondary btn-sm float-right">Order Now</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@*<div class="row mt-1 mb-0">
+    <div class="col-12">
+        <ul class="pagination">
+            <li class="@(Model.Pagination.CurrentPage == 1 ? "page-item disabled" : "page-item")"><a class="page-link" asp-controller="Product" asp-action="index" asp-route-pageNumber="1">First</a></li>
+            <li class="@(Model.Pagination.CurrentPage == 1 ? "page-item disabled" : "page-item")"><a class="page-link" asp-controller="Product" asp-action="index" asp-route-pageNumber="@(Model.Pagination.CurrentPage-1)">Previous</a></li>
+            @for (pageNumber = Model.Pagination.StartPage; pageNumber <= Model.Pagination.EndPage; pageNumber++)
+            {
+                <li class="@(pageNumber == Model.Pagination.CurrentPage ? "page-item active" : "page-item")"><a class="page-link" asp-controller="Product" asp-action="index" asp-route-pageNumber="@pageNumber">@pageNumber</a></li>
+            }
+            <li class="@(Model.Pagination.CurrentPage == Model.Pagination.TotalPages ? "page-item disabled" : "page-item")"><a class="page-link" asp-action="index" asp-route-pageNumber="@(Model.Pagination.CurrentPage+1)">Next</a></li>
+            <li class="@(Model.Pagination.CurrentPage == Model.Pagination.TotalPages ? "page-item disabled" : "page-item")"><a class="page-link" asp-action="index" asp-route-pageNumber="@Model.Pagination.TotalPages">Last</a></li>
+        </ul>
+
+    </div>
+</div>*@
+@section Script{
+    <script>
+        function changePageSize() {
+            window.location.href = `/Product/NewIndex/?pageNumber=1&pageSize=${$('#pageSize').val()}`;
+        }
+        function search(el) {
+            if ($(el).val() == null || $(el).val() == '') {
+                window.location.href = `/Product/NewIndex/?pageNumber=1&pageSize=${$('#pageSize').val()}`;
+            }
+            else {
+                window.location.href = `/Product/NewIndex/?pageNumber=1&pageSize=${$('#pageSize').val()}&keyword=${$(el).val()}`;
+            }
+        }
+    </script>
+}

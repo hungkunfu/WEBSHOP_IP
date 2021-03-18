@@ -1,0 +1,88 @@
+﻿@model List<Category>
+@inject AppDbContexts context;
+
+@{
+    var ListProduct = context.Products.ToList().FindAll(el => el.Status == Status.Active);
+    Layout = "_LayoutAdminPage";
+}
+
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb my-breadcrumb">
+        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+        <li class="breadcrumb-item"><a href="#">Elements</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Carousels</li>
+    </ol>
+</nav>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <a asp-controller="Home" asp-action="WatchProduct" asp-route-id="@item.Id">
+            <div class="col-lg-6 mt-5">
+                <div class="p-3 card card_border">
+                    <div class="pl-0 pt-0 card-header chart-grid__header" style="text-align:center">
+                        @item.Name
+                    </div>
+                    @{
+                        var productsInCategory = ListProduct.FindAll(el => el.CategoryId == item.Id);
+                        int i = 0;
+                    }
+                    <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
+                        <ol class="carousel-indicators">
+                            @if (i == 0)
+                            {
+                                @for (int j = 0; j < productsInCategory.Count - 1; j++)
+                                {
+                                    if (j == 0)
+                                    {
+                                        <li data-target="#carouselExampleCaptions" data-slide-to="@j" class="active"></li>
+                                    }
+                                    <li data-target="#carouselExampleCaptions" data-slide-to="@j"></li>
+                                }
+                            }
+                        </ol>
+                        <div class="carousel-inner">
+
+                            @foreach (var product in productsInCategory)
+                            {
+                                if (i == 0)
+                                {
+                                    <div class="carousel-item active layer">
+                                        <img src="~/Images/ProductImages/@product.ImagePath"
+                                             class="d-block w-100" alt="..." style="height:370px" />
+
+                                        <div class="carousel-caption d-none d-md-block">
+                                            <h4 style="color:red">@product.Name</h4>
+                                            @*<p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>*@
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="carousel-item layer">
+                                        <img src="~/Images/ProductImages/@product.ImagePath"
+                                             class="d-block w-100" alt="..." style="height:370px" />
+                                        <div class="carousel-caption d-none d-md-block">
+                                            <h4 style="color:red">@product.Name</h4>
+                                            @*<p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>*@
+                                        </div>
+                                    </div>
+                                }
+                                { i++; }
+                            }
+                        </div>
+                        <a class="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only"></span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselExampleCaptions" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </a>
+    }
+</div>
+

@@ -1,0 +1,130 @@
+﻿
+@inject AppDbContexts context;
+@model PaginationProduct
+
+@{
+    Layout = "~/Views/Shared/_LayoutAdminPage.cshtml";
+    var pageNumber = 1;
+    int[] pagesizeItem = new int[] { 6, 12, 24, 36, 48, 60 };
+}
+
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+@*<a asp-action="Create" asp-controller="Product"><i class="far fa-file-plus"></i></a>*@
+<div class="row">
+    <div class="col-12">
+        <a class="btn btn-primary" asp-controller="Product" asp-action="Create"><i class="fa fa-plus" aria-hidden="true"></i></a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="row">
+            <div class="col-3">
+                <select id="pageSize" class="custom-select" onchange="changePageSize()">
+                    @foreach (int item in pagesizeItem)
+                    {
+                        if (item == Model.Pagination.PageSize)
+                        {
+                            <option value="@item" selected>@item</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item</option>
+                        }
+
+                    }
+
+                </select>
+            </div>
+            <div class="col-9">
+                <input class="form-control" value="@Model.Pagination.Keyword" onchange="search(this)" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="table" id="ProductIndex">
+    <thead class="thead-dark" style="text-align:center">
+        <tr>
+            <th scope="col">Tên sản phẩm</th>
+            <th scope="col">Giá</th>
+            <th scope="col">Ngày tạo</th>
+            <th scope="col">Hình ảnh</th>
+            <th scope="col">Trạng thái</th>
+            <th scope="col">Danh mục</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody style="text-align:center">
+        @foreach (var item in Model.products)
+        {
+
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.PricePerUnit.ToString("N0")</td>
+            <td>@item.CreateAt.ToShortDateString()</td>
+          
+            <td>
+                <img src="~/img/ProductImages/@item.ImagePath" alt="Alternate Text" style="width:50px;height:45px"
+                     asp-append-version="true" />
+            </td>
+            <td>@item.Status</td>
+         
+            <td>@context.Categories.Where(el => el.Id == item.CategoryId).FirstOrDefault().Name</td>
+            <td>
+                <a asp-action="Edit" asp-controller="Product" asp-route-id="@item.Id"><i class="fas fa-edit"></i></a>
+                <a href="javascript:void(0)" class="text-danger" onclick="Product.delete(@item.Id)"><i class="fas fa-trash"></i></a>
+            </td>
+        </tr>
+        }
+    </tbody>
+    <tfoot style="text-align:center" class="thead-dark">
+        <tr>
+            <th scope="col">Tên sản phẩm</th>
+            <th scope="col">Giá</th>
+            <th scope="col">Ngày tạo</th>
+            <th scope="col">Hình ảnh</th>
+            <th scope="col">Trạng thái</th>
+            <th scope="col">Danh mục</th>
+            <th scope="col">Action</th>
+        </tr>
+    </tfoot>
+</table>
+
+<hr />
+<div class="row mt-1 mb-0">
+    <div class="col-12">
+        <ul class="pagination">
+            <li class="@(Model.Pagination.CurrentPage == 1 ? "page-item disabled" : "page-item")"><a class="page-link" asp-controller="Product" asp-action="index" asp-route-pageNumber="1">First</a></li>
+            <li class="@(Model.Pagination.CurrentPage == 1 ? "page-item disabled" : "page-item")"><a class="page-link" asp-controller="Product" asp-action="index" asp-route-pageNumber="@(Model.Pagination.CurrentPage-1)">Previous</a></li>
+            @for (pageNumber = Model.Pagination.StartPage; pageNumber <= Model.Pagination.EndPage; pageNumber++)
+            {
+                <li class="@(pageNumber == Model.Pagination.CurrentPage ? "page-item active" : "page-item")"><a class="page-link" asp-controller="Product" asp-action="index" asp-route-pageNumber="@pageNumber">@pageNumber</a></li>
+            }
+            <li class="@(Model.Pagination.CurrentPage == Model.Pagination.TotalPages ? "page-item disabled" : "page-item")"><a class="page-link" asp-action="index" asp-route-pageNumber="@(Model.Pagination.CurrentPage+1)">Next</a></li>
+            <li class="@(Model.Pagination.CurrentPage == Model.Pagination.TotalPages ? "page-item disabled" : "page-item")"><a class="page-link" asp-action="index" asp-route-pageNumber="@Model.Pagination.TotalPages">Last</a></li>
+        </ul>
+
+    </div>
+</div>
+@section Scripts{
+    <script src="~/libs/js/Product.js" asp-append-version="true"></script>
+    <script>
+        function changePageSize() {
+            window.location.href = `/Product/Index/?pageNumber=1&pageSize=${$('#pageSize').val()}`;
+        }
+        function search(el) {
+            if ($(el).val() == null || $(el).val() == '') {
+                window.location.href = `/Product/Index/?pageNumber=1&pageSize=${$('#pageSize').val()}`;
+            }
+            else {
+                window.location.href = `/Product/Index/?pageNumber=1&pageSize=${$('#pageSize').val()}&keyword=${$(el).val()}`;
+            }
+        }
+    </script>
+
+}
+
+
